@@ -3,8 +3,8 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "./AggregateState.sol";
-import "./Events.sol";
 import "./proto/command.proto.sol";
+import "./proto/event.proto.sol";
 
 
 contract NFTsState is AggregateState {
@@ -14,22 +14,36 @@ contract NFTsState is AggregateState {
 
 
     function on(DomainEvent memory evnt) internal override { 
-        if (evnt.t == DomainEventType.NFTMinted) {
-           onMinted(evnt);
-        } else if (evnt.t == DomainEventType.NFTTransfered) {
-           onTransfered(evnt);
+
+        if (evnt.evnt_type == DomainEventType.NFT_MINTED) {
+            (bool success, , NFTMintedPayload memory payload) = NFTMintedPayloadCodec.decode(0, evnt.evnt_payload, uint64(evnt.evnt_payload.length));
+            require(success, "NFTMintedPayload deserialization failed");
+
+            onMinted(payload);
         }
+
+        if (evnt.evnt_type == DomainEventType.NFT_TRANSFERED) {
+            (bool success, , NFTTransferedPayload memory payload) = NFTTransferedPayloadCodec.decode(0, evnt.evnt_payload, uint64(evnt.evnt_payload.length));
+            require(success, "NFTTransferedPayload deserialization failed");
+
+            onTransfered(payload);
+        }
+        
     }
 
-    function onMinted(DomainEvent memory evnt) private {
-        NFTMintedPayload memory ep = abi.decode(evnt.payload, (NFTMintedPayload));
-        items[ep.hash] = ep.owner;
-        ids.push(ep.hash);
+    function onMinted(NFTMintedPayload memory payload) private {
+        bytes32 hash = bytes32(payload.hash);
+        address owner = bytesToAddress(payload.owner);
+
+        items[hash] = owner;
+        ids.push(hash);
     }
 
-    function onTransfered(DomainEvent memory evnt) private {
-        NFTTransferedPayload memory ep = abi.decode(evnt.payload, (NFTTransferedPayload));
-        items[ep.hash] = ep.to;
+    function onTransfered(NFTTransferedPayload memory payload) private {
+        bytes32 hash = bytes32(payload.hash);
+        address to = bytesToAddress(payload.to);
+
+        items[hash] = to;
     }
 
     function clear() internal override { 
@@ -39,4 +53,12 @@ contract NFTsState is AggregateState {
         }
     }
     
+    function bytesToAddress(bytes memory data) public pure returns (address) { // todo: move to a preprocessor
+        require(data.length == 20, "Invalid address format");
+        address addr;
+        assembly {
+            addr := mload(add(data, 20))
+        }
+        return addr;
+    }
 }

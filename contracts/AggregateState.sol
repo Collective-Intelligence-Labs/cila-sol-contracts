@@ -3,7 +3,7 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Events.sol";
+import "./proto/event.proto.sol";
 
 
 abstract contract AggregateState is Ownable {

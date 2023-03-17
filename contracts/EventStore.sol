@@ -3,7 +3,7 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Events.sol";
+import "./proto/event.proto.sol";
 
 
 contract EventStore is Ownable {
@@ -41,7 +41,32 @@ contract EventStore is Ownable {
         return events;
     }
 
-    function push(address aggregateId, uint startIndex, DomainEvent[] memory evnts) external onlyRelay {
+
+    function pullBytes(address aggregateId, uint startIndex, uint limit) external view returns (bytes[] memory) {
+        DomainEvent[] memory events = pull(aggregateId, startIndex, limit);
+        bytes[] memory list = new bytes[](events.length);
+
+        for (uint i = 0; i < events.length; i++) {
+            list[i] = DomainEventCodec.encode(events[i]);
+        }
+
+        return list;
+    }
+
+
+    function pushBytes(address aggregateId, uint startIndex, bytes[] memory evnts) external onlyRelay {
+        DomainEvent[] memory list = new DomainEvent[](evnts.length);
+        
+        for (uint i = 0; i < evnts.length; i++) {
+            (bool success, , DomainEvent memory evnt) = DomainEventCodec.decode(0, evnts[i], uint64(evnts[i].length));
+            require(success, "Event deserialization failed");
+            list[i] = evnt;
+        }
+
+        push(aggregateId, startIndex, list);
+    }
+
+    function push(address aggregateId, uint startIndex, DomainEvent[] memory evnts) public onlyRelay {
         require(startIndex <= streams[aggregateId].length - 1, "Slice out of bounds");
         removeRange(aggregateId, startIndex);
         addRange(aggregateId, evnts);

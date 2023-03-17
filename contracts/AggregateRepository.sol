@@ -4,6 +4,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./EventStore.sol";
 import "./Aggregate.sol";
 import "./NFTsAggregate.sol";
+import "./proto/event.proto.sol";
 import "./proto/command.proto.sol";
 
 

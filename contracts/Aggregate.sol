@@ -4,7 +4,7 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./AggregateState.sol";
-import "./Events.sol";
+import "./proto/event.proto.sol";
 import "./proto/command.proto.sol";
 
 abstract contract Aggregate is Ownable {
@@ -12,7 +12,7 @@ abstract contract Aggregate is Ownable {
     AggregateState state;
     DomainEvent[] changes;
     bool isReady;
-    uint256 eventsCount;
+    uint64 eventsCount;
 
 
     function handle(Command memory cmd) external {
