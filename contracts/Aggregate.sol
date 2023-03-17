@@ -11,13 +11,12 @@ abstract contract Aggregate is Ownable {
 
     AggregateState state;
     DomainEvent[] changes;
-    address dispatcher;
+    bool isReady;
+    uint256 eventsCount;
 
-    constructor(address dispatcher_) {
-        dispatcher = dispatcher_;
-    }
 
-    function handle(Command memory cmd) external onlyDispatcher {
+    function handle(Command memory cmd) external {
+        require(isReady, "Aggregate is not setup");
         handleCommand(cmd);
     }
 
@@ -25,6 +24,7 @@ abstract contract Aggregate is Ownable {
 
     function applyEvent(DomainEvent memory evnt) internal {
         state.spool(evnt);
+        eventsCount++;
         changes.push(evnt);
     }
 
@@ -36,21 +36,20 @@ abstract contract Aggregate is Ownable {
         return changes[i];
     }
 
-
-    function replay(DomainEvent[] memory evnts) external onlyOwner {
-        state.reset();
+    function setup(DomainEvent[] memory evnts) external onlyOwner {
         for (uint i = 0; i < evnts.length; i++) {
             state.spool(evnts[i]);
+            eventsCount++;
         }
+        isReady = true;
+    }
+
+    function reset() external onlyOwner {
+        state.reset();
         for (uint i = 0; i < changes.length; i++) {
             delete changes[i];
         }
+        isReady = false;
     }
-
-    modifier onlyDispatcher {
-        require(dispatcher == msg.sender, "This function can be called by dispatcher only");
-        _;
-    }
-
 
 }

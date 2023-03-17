@@ -10,31 +10,31 @@ import "./Commands.sol";
 contract AggregateRepository is Ownable {
 
     EventStore public eventstore;
-    Aggregate public ag;
+    Aggregate public aggregate;
     
     uint constant BATCH_LIMIT = 1000; // for demo purposes only
 
     constructor(address relay) {
         eventstore = new EventStore(relay);
-        ag = new NFTsAggregate(msg.sender); // for demo purposes only
+        aggregate = new NFTsAggregate(); // for demo purposes only
     }
 
-    function get(address aggregateId) external onlyOwner returns (Aggregate aggregate) {
-        require(address(ag) == aggregateId, "Only one aggregate is supported at the moment");
+    function get() external onlyOwner returns (Aggregate) {
 
-        DomainEvent[] memory evnts = eventstore.get(aggregateId, 0, BATCH_LIMIT);
-        ag.replay(evnts);
+        DomainEvent[] memory evnts = eventstore.pull(address(aggregate), 0, BATCH_LIMIT);
+        aggregate.setup(evnts);
 
-        return ag;
+        return aggregate;
     }
 
-    function save(Aggregate aggregate) external onlyOwner {
-        require(address(aggregate) == address(ag), "Only one aggregate is supported at the moment");
+    function save(Aggregate ag) external onlyOwner {
 
-        for (uint i = 0; i < aggregate.getChangesLength(); i++) {
-            DomainEvent memory evnt = aggregate.getChange(i);
-            eventstore.append(address(aggregate), evnt);
+        for (uint i = 0; i < ag.getChangesLength(); i++) {
+            DomainEvent memory evnt = ag.getChange(i);
+            eventstore.append(address(ag), evnt);
             // todo: Publish event
         }
+
+        ag.reset();
     }
 }

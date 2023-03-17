@@ -21,7 +21,7 @@ contract EventStore is Ownable {
     }
 
 
-    function get(address aggregateId, uint startIndex, uint limit) public view returns (DomainEvent[] memory) {
+    function pull(address aggregateId, uint startIndex, uint limit) public view returns (DomainEvent[] memory) {
 
         uint length = streams[aggregateId].length;
         if (startIndex >= length) {
@@ -41,16 +41,15 @@ contract EventStore is Ownable {
         return events;
     }
 
-
-    function append(address aggregateId, DomainEvent memory evnt) external onlyOwner {
-        add(aggregateId, evnt);
-    }
-
-
-    function sync(address aggregateId, uint startIndex, DomainEvent[] memory evnts) external onlyRelay {
+    function push(address aggregateId, uint startIndex, DomainEvent[] memory evnts) external onlyRelay {
         require(startIndex <= streams[aggregateId].length - 1, "Slice out of bounds");
         removeRange(aggregateId, startIndex);
         addRange(aggregateId, evnts);
+    }
+
+
+    function append(address aggregateId, DomainEvent memory evnt) external onlyOwner {
+        add(aggregateId, evnt);
     }
 
 

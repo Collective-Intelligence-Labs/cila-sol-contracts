@@ -9,7 +9,7 @@ import "./Events.sol";
 
 contract NFTsAggregate is Aggregate {
 
-    constructor(address dispatcher) Aggregate(dispatcher) {
+    constructor() {
         state = new NFTsState();
     }
 
@@ -31,6 +31,7 @@ contract NFTsAggregate is Aggregate {
         ep.owner = cp.owner;
 
         DomainEvent memory evnt;
+        evnt.idx = eventsCount;
         evnt.t = DomainEventType.NFTMinted;
         evnt.payload = abi.encode(ep);
 
@@ -48,6 +49,7 @@ contract NFTsAggregate is Aggregate {
         ep.to = cp.to;
         
         DomainEvent memory evnt;
+        evnt.idx = eventsCount;
         evnt.t = DomainEventType.NFTTransfered;
         evnt.payload = abi.encode(ep);
 

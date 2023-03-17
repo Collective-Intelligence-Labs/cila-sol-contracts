@@ -15,6 +15,7 @@ contract Dispatcher is Ownable {
 
     mapping (address => bool) public routers;
     AggregateRepository public repository;
+    bool locked;
 
     constructor(address relay) {
         repository = new AggregateRepository(relay);
@@ -25,6 +26,13 @@ contract Dispatcher is Ownable {
         _;
     }
 
+    modifier noReentrancy() {
+        require(!locked, "Reentrancy call is not allowed");
+        locked = true;
+        _;
+        locked = false;
+    }
+
     function addRouter(address router) public onlyOwner {
         routers[router] = true;
     }
@@ -33,7 +41,7 @@ contract Dispatcher is Ownable {
         delete routers[router];
     }
 
-    function dispatch(bytes memory opBytes) public onlyRouter {
+    function dispatch(bytes memory opBytes) public onlyRouter noReentrancy {
         // todo: Desirialize opBytes to commands
         
         MintNFTPayload memory cp1;
@@ -47,19 +55,29 @@ contract Dispatcher is Ownable {
 
         TransferNFTPayload memory cp2;
         cp2.hash = keccak256("Super cool NFT");
-        cp2.to = address(0x847E705058DF6CfFbB718c39664A93a93804e943);
+        cp2.to = generateRandomAddress();
 
         Command memory cmd2;
         cmd2.t = CommandType.TransferNFT;
         cmd2.payload = abi.encode(cp2);
 
-        address aggregateId = address(repository.ag());
-        Aggregate aggregate = repository.get(aggregateId);
+        Aggregate aggregate = repository.get();
 
         aggregate.handle(cmd1);
         aggregate.handle(cmd2);
 
         repository.save(aggregate);
+    }
+
+    function dispatch2(bytes memory opBytes) public onlyRouter returns(string memory result) {
+        result = string.concat("OK: ", string(abi.encodePacked(opBytes)));
+    }
+
+    function generateRandomAddress() private view returns (address) {
+        uint256 randomUint = uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, msg.sender, type(uint256).max)));
+        bytes memory randomBytes = abi.encodePacked(randomUint);
+        address randomAddress = address(uint160(uint256(keccak256(randomBytes))));
+        return randomAddress;
     }
 
 }

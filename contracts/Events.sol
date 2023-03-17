@@ -3,6 +3,7 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 struct DomainEvent {
+    uint256 idx;
     DomainEventType t;
     bytes payload;
 }

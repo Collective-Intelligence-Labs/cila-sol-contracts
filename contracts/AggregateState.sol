@@ -15,7 +15,7 @@ abstract contract AggregateState is Ownable {
     }
     
 
-    function clear() internal virtual; // for demo purposes only
+    function clear() internal virtual;
 
     function reset() external onlyOwner {
         clear();
