@@ -19,14 +19,20 @@ contract Dispatcher is Ownable {
     AggregateRepository public repository;
     bool locked;
 
+
     constructor(address relay) {
         repository = new AggregateRepository(relay);
     }
+
+
+    event OmnichainEvent(uint64 indexed _idx, DomainEventType indexed _type, bytes _payload);
+
 
     modifier onlyRouter {
         require(routers[msg.sender], "Unauthorized: transaction sender must be an authorized Router");
         _;
     }
+
 
     modifier noReentrancy() {
         require(!locked, "Reentrancy call is not allowed");
@@ -35,13 +41,16 @@ contract Dispatcher is Ownable {
         locked = false;
     }
 
+
     function addRouter(address router) public onlyOwner {
         routers[router] = true;
     }
 
+
     function removeRouter(address router) public onlyOwner {
         delete routers[router];
     }
+
 
     function dispatch(bytes memory opBytes) public onlyRouter noReentrancy {
 
@@ -51,11 +60,15 @@ contract Dispatcher is Ownable {
         Aggregate aggregate = repository.get();
 
         for (uint i = 0; i < operation.commands.length; i++) {
-            // todo: check cmd signature
+            // todo: check cmd author signature
             aggregate.handle(operation.commands[i]);
         }
 
-        repository.save(aggregate);
+        DomainEvent[] memory recentChanges = repository.save(aggregate);
+        for (uint i = 0; i < recentChanges.length; i++) {
+            DomainEvent memory recentChange = recentChanges[i];
+            emit OmnichainEvent(recentChange.evnt_idx, recentChange.evnt_type, DomainEventCodec.encode(recentChange));
+        }
     }
 
 }

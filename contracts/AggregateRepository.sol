@@ -28,14 +28,18 @@ contract AggregateRepository is Ownable {
         return aggregate;
     }
 
-    function save(Aggregate ag) external onlyOwner {
+    function save(Aggregate ag) external onlyOwner returns (DomainEvent[] memory) {
+
+        DomainEvent[] memory changes = new DomainEvent[](ag.getChangesLength());
 
         for (uint i = 0; i < ag.getChangesLength(); i++) {
             DomainEvent memory evnt = ag.getChange(i);
             eventstore.append(address(ag), evnt);
-            // todo: Publish event
+            changes[i] = evnt;
         }
 
         ag.reset();
+
+        return changes;
     }
 }
