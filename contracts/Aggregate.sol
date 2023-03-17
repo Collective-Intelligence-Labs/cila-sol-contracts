@@ -16,7 +16,7 @@ abstract contract Aggregate is Ownable {
 
 
     function handle(Command memory cmd) external {
-        require(isReady, "Aggregate is not setup");
+        require(isReady, "Aggregate is not set up");
         handleCommand(cmd);
     }
 
@@ -46,6 +46,7 @@ abstract contract Aggregate is Ownable {
 
     function reset() external onlyOwner {
         state.reset();
+        eventsCount = 0;
         for (uint i = 0; i < changes.length; i++) {
             delete changes[i];
         }

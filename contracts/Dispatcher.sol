@@ -9,7 +9,7 @@ import "./Commands.sol";
 
 /** 
  * @title Dispatcher
- * @dev Entrypoint for transaction
+ * @dev Entrypoint for router transaction
  */
 contract Dispatcher is Ownable {
 
