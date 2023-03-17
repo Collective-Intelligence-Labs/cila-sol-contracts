@@ -5,7 +5,9 @@ pragma solidity >=0.8.0 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Aggregate.sol";
 import "./AggregateRepository.sol";
-import "./Commands.sol";
+import "./proto/command.proto.sol";
+import "./proto/operation.proto.sol";
+
 
 /** 
  * @title Dispatcher
@@ -42,35 +44,18 @@ contract Dispatcher is Ownable {
     }
 
     function dispatch(bytes memory opBytes) public onlyRouter noReentrancy {
-        // todo: Desirialize opBytes to commands
-        
-        MintNFTPayload memory cp1;
-        cp1.hash = keccak256("Super cool NFT");
-        cp1.owner = msg.sender;
 
-        Command memory cmd1;
-        cmd1.t = CommandType.MintNFT;
-        cmd1.payload = abi.encode(cp1);
-
-
-        TransferNFTPayload memory cp2;
-        cp2.hash = keccak256("Super cool NFT");
-        cp2.to = generateRandomAddress();
-
-        Command memory cmd2;
-        cmd2.t = CommandType.TransferNFT;
-        cmd2.payload = abi.encode(cp2);
+        (bool success, uint64 pos, Operation memory operation) = OperationCodec.decode(0, opBytes, uint64(opBytes.length));
+        require(success, "Operation deserialization failed");
 
         Aggregate aggregate = repository.get();
 
-        aggregate.handle(cmd1);
-        aggregate.handle(cmd2);
+        for (uint i = 0; i < operation.commands.length; i++) {
+            // todo: check cmd signature
+            aggregate.handle(operation.commands[i]);
+        }
 
         repository.save(aggregate);
-    }
-
-    function dispatch2(bytes memory opBytes) public onlyRouter returns(string memory result) {
-        result = string.concat("OK: ", string(abi.encodePacked(opBytes)));
     }
 
     function generateRandomAddress() private view returns (address) {

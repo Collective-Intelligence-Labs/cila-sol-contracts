@@ -4,7 +4,8 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "./Aggregate.sol";
 import "./NFTsState.sol";
-import "./Commands.sol";
+import "./proto/command.proto.sol";
+
 import "./Events.sol";
 
 contract NFTsAggregate is Aggregate {
@@ -14,21 +15,32 @@ contract NFTsAggregate is Aggregate {
     }
 
     function handleCommand(Command memory cmd) internal override { 
-        if (cmd.t == CommandType.MintNFT) {
-            mint(cmd);
-        } else if (cmd.t == CommandType.TransferNFT) {
-            transfer(cmd);
+
+        if (cmd.cmd_type == CommandType.MINT_NFT) {
+            (bool success, uint64 pos, MintNFTPayload memory payload) = MintNFTPayloadCodec.decode(0, cmd.cmd_payload, uint64(cmd.cmd_payload.length));
+            require(success, "MintNFTPayload deserialization failed");
+
+            mint(payload);
+        } 
+        
+        if (cmd.cmd_type == CommandType.TRANSFER_NFT) {
+            (bool success, uint64 pos, TransferNFTPayload memory payload) = TransferNFTPayloadCodec.decode(0, cmd.cmd_payload, uint64(cmd.cmd_payload.length));
+            require(success, "TransferNFTPayload deserialization failed");
+            
+            transfer(payload);
         }
     }
 
-    function mint(Command memory cmd) private {
-        MintNFTPayload memory cp = abi.decode(cmd.payload, (MintNFTPayload));
+    function mint(MintNFTPayload memory payload) private {
         NFTsState s = NFTsState(address(state));
-        require(s.items(cp.hash) == address(0), "NFT with such hash is already minted");
+
+        bytes32 hash = bytes32(payload.hash);
+        address owner = bytesToAddress(payload.owner);
+        require(s.items(hash) == address(0), "NFT with such hash is already minted");
 
         NFTMintedPayload memory ep; 
-        ep.hash = cp.hash;
-        ep.owner = cp.owner;
+        ep.hash = hash;
+        ep.owner = owner;
 
         DomainEvent memory evnt;
         evnt.idx = eventsCount;
@@ -38,15 +50,17 @@ contract NFTsAggregate is Aggregate {
         applyEvent(evnt);
     }
 
-    function transfer(Command memory cmd) private {
-        TransferNFTPayload memory cp = abi.decode(cmd.payload, (TransferNFTPayload));
+    function transfer(TransferNFTPayload memory payload) private {
         NFTsState s = NFTsState(address(state));
-        require(s.items(cp.hash) != cp.to, "NFT can not be transferred to its current owner");
+        
+        bytes32 hash = bytes32(payload.hash);
+        address to = bytesToAddress(payload.to);
+        require(s.items(hash) != to, "NFT can not be transferred to its current owner");
 
         NFTTransferedPayload memory ep;
-        ep.hash = cp.hash;
-        ep.from = s.items(cp.hash);
-        ep.to = cp.to;
+        ep.hash = hash;
+        ep.from = s.items(hash);
+        ep.to = to;
         
         DomainEvent memory evnt;
         evnt.idx = eventsCount;
@@ -56,4 +70,12 @@ contract NFTsAggregate is Aggregate {
         applyEvent(evnt);
     }
 
+    function bytesToAddress(bytes memory data) private pure returns (address) { // temp
+        require(data.length == 20, "Invalid address length");
+        address addr;
+        assembly {
+            addr := mload(add(data, 20))
+        }
+        return addr;
+    }
 }

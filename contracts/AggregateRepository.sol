@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./EventStore.sol";
 import "./Aggregate.sol";
 import "./NFTsAggregate.sol";
-import "./Commands.sol";
+import "./proto/command.proto.sol";
 
 
 contract AggregateRepository is Ownable {

@@ -4,7 +4,7 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "./AggregateState.sol";
 import "./Events.sol";
-import "./Commands.sol";
+import "./proto/command.proto.sol";
 
 
 contract NFTsState is AggregateState {
