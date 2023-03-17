@@ -34,7 +34,6 @@ contract NFTsAggregate is Aggregate {
         NFTsState s = NFTsState(address(state));
 
         bytes32 hash = bytes32(payload.hash);
-        address owner = bytesToAddress(payload.owner);
         require(s.items(hash) == address(0), "NFT with such hash is already minted");
 
         NFTMintedPayload memory evnt_payload; 
