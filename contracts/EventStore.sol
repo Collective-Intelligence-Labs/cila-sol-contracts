@@ -21,6 +21,20 @@ contract EventStore is Ownable {
     }
 
 
+    function get(address aggregateId, uint idx) public view returns (DomainEvent memory) {
+        require(idx < streams[aggregateId].length, "Index out of bounds");
+        DomainEvent memory evnt = streams[aggregateId][idx];
+        return evnt;
+    }
+
+
+    function getBytes(address aggregateId, uint idx) public view returns (bytes memory) {
+        DomainEvent memory evnt = get(aggregateId, idx);
+        bytes memory ev = DomainEventCodec.encode(evnt);
+        return ev;
+    }
+
+
     function pull(address aggregateId, uint startIndex, uint limit) public view returns (DomainEvent[] memory) {
 
         uint length = streams[aggregateId].length;
@@ -93,10 +107,10 @@ contract EventStore is Ownable {
     }
 
 
-    function remove(address aggregateId, uint index) private {
-        require(index < streams[aggregateId].length, "Index out of bounds");
+    function remove(address aggregateId, uint idx) private {
+        require(idx < streams[aggregateId].length, "Index out of bounds");
 
-        for (uint i = index; i < streams[aggregateId].length - 1; i++) {
+        for (uint i = idx; i < streams[aggregateId].length - 1; i++) {
             streams[aggregateId][i] = streams[aggregateId][i+1];
         }
         
