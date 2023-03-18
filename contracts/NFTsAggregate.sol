@@ -69,12 +69,4 @@ contract NFTsAggregate is Aggregate {
         applyEvent(evnt);
     }
 
-    function bytesToAddress(bytes memory data) private pure returns (address) { // todo: move to a preprocessor
-        require(data.length == 20, "Invalid address format");
-        address addr;
-        assembly {
-            addr := mload(add(data, 20))
-        }
-        return addr;
-    }
 }

@@ -52,13 +52,5 @@ contract NFTsState is AggregateState {
             delete ids[i];
         }
     }
-    
-    function bytesToAddress(bytes memory data) public pure returns (address) { // todo: move to a preprocessor
-        require(data.length == 20, "Invalid address format");
-        address addr;
-        assembly {
-            addr := mload(add(data, 20))
-        }
-        return addr;
-    }
+
 }

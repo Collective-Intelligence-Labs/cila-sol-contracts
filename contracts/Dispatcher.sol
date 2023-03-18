@@ -2,11 +2,10 @@
 
 pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Ownable.sol";
 import "./Aggregate.sol";
 import "./AggregateRepository.sol";
 import "./proto/operation.proto.sol";
-import "./proto/command.proto.sol";
 
 
 /** 
@@ -17,7 +16,7 @@ contract Dispatcher is Ownable {
 
     mapping (address => bool) public routers;
     AggregateRepository public repository;
-    bool locked;
+    bool isLocked;
 
 
     constructor(address relay) {
@@ -35,10 +34,10 @@ contract Dispatcher is Ownable {
 
 
     modifier noReentrancy() {
-        require(!locked, "Reentrancy call is not allowed");
-        locked = true;
+        require(!isLocked, "Reentrancy call is not allowed");
+        isLocked = true;
         _;
-        locked = false;
+        isLocked = false;
     }
 
 
@@ -53,7 +52,6 @@ contract Dispatcher is Ownable {
 
 
     function dispatch(bytes memory opBytes) public onlyRouter noReentrancy {
-
         (bool success, , Operation memory operation) = OperationCodec.decode(0, opBytes, uint64(opBytes.length));
         require(success, "Operation deserialization failed");
 
