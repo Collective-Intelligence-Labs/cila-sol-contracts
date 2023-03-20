@@ -2,11 +2,10 @@
 
 pragma solidity >=0.8.0 <0.9.0;
 
-import "./Ownable.sol";
 import "./proto/event.proto.sol";
 
 
-contract EventStore is Ownable {
+contract EventStore {
 
     mapping (address => DomainEvent[]) streams;
     address relay;
@@ -87,7 +86,7 @@ contract EventStore is Ownable {
     }
 
 
-    function append(address aggregateId, DomainEvent memory evnt) external onlyOwner {
+    function append(address aggregateId, DomainEvent memory evnt) external { // todo: add repository authorization
         add(aggregateId, evnt);
     }
 

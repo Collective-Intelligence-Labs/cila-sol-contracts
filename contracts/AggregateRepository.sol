@@ -15,8 +15,8 @@ contract AggregateRepository is Ownable {
     
     uint constant BATCH_LIMIT = 1000; // for demo purposes only
 
-    constructor(address relay) {
-        eventstore = new EventStore(relay);
+    constructor(address eventstore_) {
+        eventstore = EventStore(eventstore_);
         aggregate = new NFTsAggregate(); // for demo purposes only
     }
 

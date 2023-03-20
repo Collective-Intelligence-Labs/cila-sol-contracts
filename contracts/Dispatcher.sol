@@ -19,8 +19,8 @@ contract Dispatcher is Ownable {
     bool isLocked;
 
 
-    constructor(address relay) {
-        repository = new AggregateRepository(relay);
+    constructor(address eventstore_) {
+        repository = new AggregateRepository(eventstore_);
     }
 
 
