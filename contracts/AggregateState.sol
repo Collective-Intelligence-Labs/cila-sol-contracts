@@ -2,7 +2,7 @@
 
 pragma solidity >=0.8.0 <0.9.0;
 
-import "./Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./proto/event.proto.sol";
 
 
@@ -13,7 +13,6 @@ abstract contract AggregateState is Ownable {
     function spool(DomainEvent memory evnt) external onlyOwner {
         on(evnt);
     }
-    
 
     function clear() internal virtual;
 

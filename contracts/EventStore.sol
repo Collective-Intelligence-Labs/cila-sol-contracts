@@ -8,7 +8,7 @@ import "./proto/event.proto.sol";
 contract EventStore {
 
     mapping (address => DomainEvent[]) streams;
-    address relay;
+    address public relay;
 
     constructor(address relay_) {
         relay = relay_;

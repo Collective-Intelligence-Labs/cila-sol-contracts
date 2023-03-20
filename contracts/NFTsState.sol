@@ -3,15 +3,16 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "./AggregateState.sol";
+import "./Utils.sol";
 import "./proto/command.proto.sol";
 import "./proto/event.proto.sol";
 
 
-contract NFTsState is AggregateState {
+contract NFTsState is AggregateState, Utils {
 
     mapping (bytes32 => address) public items;
     bytes32[] public ids;
-
+    
 
     function on(DomainEvent memory evnt) internal override { 
 

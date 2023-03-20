@@ -4,10 +4,12 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "./Aggregate.sol";
 import "./NFTsState.sol";
+import "./Utils.sol";
 import "./proto/command.proto.sol";
 import "./proto/event.proto.sol";
 
-contract NFTsAggregate is Aggregate {
+
+contract NFTsAggregate is Aggregate, Utils {
 
     constructor() {
         state = new NFTsState();
@@ -47,7 +49,6 @@ contract NFTsAggregate is Aggregate {
 
         applyEvent(evnt);
     }
-
 
     function transfer(TransferNFTPayload memory payload) private {
         NFTsState s = NFTsState(address(state));

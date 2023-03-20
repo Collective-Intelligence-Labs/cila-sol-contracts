@@ -1,6 +1,8 @@
+// SPDX-License-Identifier: GPL-3.0
+
 pragma solidity >=0.8.0 <0.9.0;
 
-import "./Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./EventStore.sol";
 import "./Aggregate.sol";
 import "./NFTsAggregate.sol";
@@ -12,6 +14,7 @@ contract AggregateRepository is Ownable {
 
     EventStore public eventstore;
     Aggregate public aggregate;
+    address public dispatcher;
     
     uint constant BATCH_LIMIT = 1000; // for demo purposes only
 
@@ -20,7 +23,16 @@ contract AggregateRepository is Ownable {
         aggregate = new NFTsAggregate(); // for demo purposes only
     }
 
-    function get() external onlyOwner returns (Aggregate) {
+    modifier onlyDispatcher {
+        require(msg.sender == dispatcher, "Unauthorized: transaction sender must be an authorized Dispatcher");
+        _;
+    }
+
+    function setDispatcher(address dispatcher_) public onlyOwner {
+        dispatcher = dispatcher_;
+    }
+
+    function get(/* address aggregateId */) external onlyDispatcher returns (Aggregate) {
 
         DomainEvent[] memory evnts = eventstore.pull(address(aggregate), 0, BATCH_LIMIT);
         aggregate.setup(evnts);
@@ -28,7 +40,7 @@ contract AggregateRepository is Ownable {
         return aggregate;
     }
 
-    function save(Aggregate ag) external onlyOwner returns (DomainEvent[] memory) {
+    function save(Aggregate ag) external onlyDispatcher returns (DomainEvent[] memory) {
 
         DomainEvent[] memory changes = new DomainEvent[](ag.getChangesLength());
 
@@ -42,4 +54,5 @@ contract AggregateRepository is Ownable {
 
         return changes;
     }
+
 }
