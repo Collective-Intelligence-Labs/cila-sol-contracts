@@ -26,7 +26,7 @@
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": false,
+			"enabled": true,
 			"runs": 200
 		},
 		"remappings": []
@@ -41,11 +41,11 @@
 			]
 		},
 		"contracts/proto/event.proto.sol": {
-			"keccak256": "0x1d3243b8679547ed001fc1678a640386f77404ede707877ca48585b201076c32",
+			"keccak256": "0xbe1dd6129347244490a8791792a6b2d420934406d49e525dca599549f93cd374",
 			"license": "CC0",
 			"urls": [
-				"bzz-raw://3517128929de898b6ec025f7aa426cb8a2316870ebabf719bddd6b747bf2be39",
-				"dweb:/ipfs/QmamUysWou35jgQh37jTYqaTtTxbGkcZwqGHVQQrrFJRoN"
+				"bzz-raw://33cf052c0b0e207d75d07d6eb02b02e3da73609349febc0c70b37dc3db9f408b",
+				"dweb:/ipfs/QmWbg8MVSP8HdHrty4NMFqmCuLZSMghPSEyGWZUErT67mT"
 			]
 		}
 	},

@@ -249,23 +249,51 @@ library DomainEventCodec {
         bytes memory finalEncoded;
         index = 0;
         len = 0;
+
+        len += uint64(encodedInstance.evnt_idx__Key.length);
         len += uint64(encodedInstance.evnt_idx.length);
+
+        len += uint64(encodedInstance.evnt_type__Key.length);
         len += uint64(encodedInstance.evnt_type.length);
+
+        len += uint64(encodedInstance.evnt_payload__Key.length);
+        len += uint64(encodedInstance.evnt_payload__Length.length);
         len += uint64(encodedInstance.evnt_payload.length);
+        
         finalEncoded = new bytes(len);
 
+
         uint64 j;
+
+        j = 0;
+        while (j < encodedInstance.evnt_idx__Key.length) {
+            finalEncoded[index++] = encodedInstance.evnt_idx__Key[j++];
+        }
         j = 0;
         while (j < encodedInstance.evnt_idx.length) {
-            finalEncoded[index++] = encodedInstance.evnt_idx[j];
+            finalEncoded[index++] = encodedInstance.evnt_idx[j++];
+        }
+
+        j = 0;
+        while (j < encodedInstance.evnt_type__Key.length) {
+            finalEncoded[index++] = encodedInstance.evnt_type__Key[j++];
         }
         j = 0;
         while (j < encodedInstance.evnt_type.length) {
-            finalEncoded[index++] = encodedInstance.evnt_type[j];
+            finalEncoded[index++] = encodedInstance.evnt_type[j++];
+        }
+
+        j = 0;
+        while (j < encodedInstance.evnt_payload__Key.length) {
+            finalEncoded[index++] = encodedInstance.evnt_payload__Key[j++];
+        }
+        j = 0;
+        while (j < encodedInstance.evnt_payload__Length.length) {
+            finalEncoded[index++] = encodedInstance.evnt_payload__Length[j++];
         }
         j = 0;
         while (j < encodedInstance.evnt_payload.length) {
-            finalEncoded[index++] = encodedInstance.evnt_payload[j];
+            finalEncoded[index++] = encodedInstance.evnt_payload[j++];
         }
 
         return finalEncoded;
@@ -479,20 +507,46 @@ library NFTMintedPayloadCodec {
         }
 
         bytes memory finalEncoded;
-        index = 0;
         len = 0;
+        index = 0;
+
+        len += uint64(encodedInstance.hash__Key.length);
+        len += uint64(encodedInstance.hash__Length.length);
         len += uint64(encodedInstance.hash.length);
+
+        len += uint64(encodedInstance.owner__Key.length);
+        len += uint64(encodedInstance.owner__Length.length);
         len += uint64(encodedInstance.owner.length);
+
         finalEncoded = new bytes(len);
 
+
         uint64 j;
+
+        j = 0;
+        while (j < encodedInstance.hash__Key.length) {
+            finalEncoded[index++] = encodedInstance.hash__Key[j++];
+        }
+        j = 0;
+        while (j < encodedInstance.hash__Length.length) {
+            finalEncoded[index++] = encodedInstance.hash__Length[j++];
+        }
         j = 0;
         while (j < encodedInstance.hash.length) {
-            finalEncoded[index++] = encodedInstance.hash[j];
+            finalEncoded[index++] = encodedInstance.hash[j++];
+        }
+
+        j = 0;
+        while (j < encodedInstance.owner__Key.length) {
+            finalEncoded[index++] = encodedInstance.owner__Key[j++];
+        }
+        j = 0;
+        while (j < encodedInstance.owner__Length.length) {
+            finalEncoded[index++] = encodedInstance.owner__Length[j++];
         }
         j = 0;
         while (j < encodedInstance.owner.length) {
-            finalEncoded[index++] = encodedInstance.owner[j];
+            finalEncoded[index++] = encodedInstance.owner[j++];
         }
 
         return finalEncoded;
@@ -760,23 +814,61 @@ library NFTTransferedPayloadCodec {
         bytes memory finalEncoded;
         index = 0;
         len = 0;
+
+        
+        len += uint64(encodedInstance.hash__Key.length);
+        len += uint64(encodedInstance.hash__Length.length);
         len += uint64(encodedInstance.hash.length);
+
+        len += uint64(encodedInstance.from__Key.length);
+        len += uint64(encodedInstance.from__Length.length);
         len += uint64(encodedInstance.from.length);
+        
+        len += uint64(encodedInstance.to__Key.length);
+        len += uint64(encodedInstance.to__Length.length);
         len += uint64(encodedInstance.to.length);
+
         finalEncoded = new bytes(len);
 
         uint64 j;
+
+        j = 0;
+        while (j < encodedInstance.hash__Key.length) {
+            finalEncoded[index++] = encodedInstance.hash__Key[j++];
+        }
+        j = 0;
+        while (j < encodedInstance.hash__Length.length) {
+            finalEncoded[index++] = encodedInstance.hash__Length[j++];
+        }
         j = 0;
         while (j < encodedInstance.hash.length) {
-            finalEncoded[index++] = encodedInstance.hash[j];
+            finalEncoded[index++] = encodedInstance.hash[j++];
+        }
+
+        j = 0;
+        while (j < encodedInstance.from__Key.length) {
+            finalEncoded[index++] = encodedInstance.from__Key[j++];
+        }
+        j = 0;
+        while (j < encodedInstance.from__Length.length) {
+            finalEncoded[index++] = encodedInstance.from__Length[j++];
         }
         j = 0;
         while (j < encodedInstance.from.length) {
-            finalEncoded[index++] = encodedInstance.from[j];
+            finalEncoded[index++] = encodedInstance.from[j++];
+        }
+
+        j = 0;
+        while (j < encodedInstance.to__Key.length) {
+            finalEncoded[index++] = encodedInstance.to__Key[j++];
+        }
+        j = 0;
+        while (j < encodedInstance.to__Length.length) {
+            finalEncoded[index++] = encodedInstance.to__Length[j++];
         }
         j = 0;
         while (j < encodedInstance.to.length) {
-            finalEncoded[index++] = encodedInstance.to[j];
+            finalEncoded[index++] = encodedInstance.to[j++];
         }
 
         return finalEncoded;
