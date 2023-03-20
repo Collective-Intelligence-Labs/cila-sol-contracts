@@ -47,9 +47,7 @@ abstract contract Aggregate is Ownable {
     function reset() external onlyOwner {
         state.reset();
         eventsCount = 0;
-        for (uint i = 0; i < changes.length; i++) {
-            delete changes[i];
-        }
+        delete changes;
         isReady = false;
     }
 
