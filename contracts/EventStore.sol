@@ -2,10 +2,11 @@
 
 pragma solidity >=0.8.0 <0.9.0;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./proto/event.proto.sol";
 
 
-contract EventStore {
+contract EventStore is Ownable {
 
     mapping (address => DomainEvent[]) streams;
     address public relay;
@@ -124,6 +125,11 @@ contract EventStore {
         for (uint i = 0; i < len; i++) {
             streams[aggregateId].pop();
         }
+    }
+
+
+    function clean(address aggregateId) external onlyOwner { // for demo purposes only
+        delete streams[aggregateId];
     }
 
 }
