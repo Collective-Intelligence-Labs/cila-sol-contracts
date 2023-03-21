@@ -50,8 +50,8 @@ contract NFTsState is AggregateState, Utils {
     function clear() internal override { 
         for (uint i = 0; i < ids.length; i++) {
             delete items[ids[i]];
-            delete ids[i];
         }
+        delete ids;
     }
 
 }
