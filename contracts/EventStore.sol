@@ -8,7 +8,7 @@ import "./proto/event.proto.sol";
 
 contract EventStore is Ownable {
 
-    mapping (address => DomainEvent[]) streams;
+    mapping (string => DomainEvent[]) public streams;
     address public relay;
 
     constructor(address relay_) {
@@ -21,21 +21,21 @@ contract EventStore is Ownable {
     }
 
 
-    function get(address aggregateId, uint idx) public view returns (DomainEvent memory) {
+    function get(string memory aggregateId, uint idx) public view returns (DomainEvent memory) {
         require(idx < streams[aggregateId].length, "Index out of bounds");
         DomainEvent memory evnt = streams[aggregateId][idx];
         return evnt;
     }
 
 
-    function getBytes(address aggregateId, uint idx) public view returns (bytes memory) {
+    function getBytes(string memory aggregateId, uint idx) public view returns (bytes memory) {
         DomainEvent memory evnt = get(aggregateId, idx);
         bytes memory ev = DomainEventCodec.encode(evnt);
         return ev;
     }
 
 
-    function pull(address aggregateId, uint startIndex, uint limit) public view returns (DomainEvent[] memory) {
+    function pull(string memory aggregateId, uint startIndex, uint limit) public view returns (DomainEvent[] memory) {
 
         uint length = streams[aggregateId].length;
         if (startIndex >= length) {
@@ -56,7 +56,7 @@ contract EventStore is Ownable {
     }
 
 
-    function pullBytes(address aggregateId, uint startIndex, uint limit) external view returns (bytes[] memory) {
+    function pullBytes(string memory aggregateId, uint startIndex, uint limit) external view returns (bytes[] memory) {
         DomainEvent[] memory events = pull(aggregateId, startIndex, limit);
         bytes[] memory list = new bytes[](events.length);
 
@@ -68,7 +68,7 @@ contract EventStore is Ownable {
     }
 
 
-    function pushBytes(address aggregateId, uint startIndex, bytes[] memory evnts) external onlyRelay {
+    function pushBytes(string memory aggregateId, uint startIndex, bytes[] memory evnts) external onlyRelay {
         DomainEvent[] memory list = new DomainEvent[](evnts.length);
         
         for (uint i = 0; i < evnts.length; i++) {
@@ -80,25 +80,25 @@ contract EventStore is Ownable {
         push(aggregateId, startIndex, list);
     }
 
-    function push(address aggregateId, uint startIndex, DomainEvent[] memory evnts) public onlyRelay {
+    function push(string memory aggregateId, uint startIndex, DomainEvent[] memory evnts) public onlyRelay {
         require(startIndex <= streams[aggregateId].length - 1, "Slice out of bounds");
         removeRange(aggregateId, startIndex);
         addRange(aggregateId, evnts);
     }
 
 
-    function append(address aggregateId, DomainEvent memory evnt) external { // todo: add repository authorization
+    function append(string memory aggregateId, DomainEvent memory evnt) external { // todo: add repository authorization
         add(aggregateId, evnt);
     }
 
 
-    function add(address aggregateId, DomainEvent memory evnt) private returns(uint eventIdx) {
+    function add(string memory aggregateId, DomainEvent memory evnt) private returns(uint eventIdx) {
         streams[aggregateId].push(evnt);
         return streams[aggregateId].length - 1;
     }
 
 
-    function addRange(address aggregateId, DomainEvent[] memory evnts) private returns(uint eventIdx) {
+    function addRange(string memory aggregateId, DomainEvent[] memory evnts) private returns(uint eventIdx) {
         for (uint i = 0; i < evnts.length; i++) {
             streams[aggregateId].push(evnts[i]);
         }
@@ -107,7 +107,7 @@ contract EventStore is Ownable {
     }
 
 
-    function remove(address aggregateId, uint idx) private {
+    function remove(string memory aggregateId, uint idx) private {
         require(idx < streams[aggregateId].length, "Index out of bounds");
 
         for (uint i = idx; i < streams[aggregateId].length - 1; i++) {
@@ -118,7 +118,7 @@ contract EventStore is Ownable {
     }
 
 
-    function removeRange(address aggregateId, uint startIndex) private {
+    function removeRange(string memory aggregateId, uint startIndex) private {
         require(startIndex < streams[aggregateId].length, "Index out of bounds");
 
         uint len = streams[aggregateId].length - startIndex;
@@ -128,7 +128,7 @@ contract EventStore is Ownable {
     }
 
 
-    function clean(address aggregateId) external onlyOwner { // for demo purposes only
+    function clean(string memory aggregateId) external onlyOwner { // for demo purposes only
         delete streams[aggregateId];
     }
 

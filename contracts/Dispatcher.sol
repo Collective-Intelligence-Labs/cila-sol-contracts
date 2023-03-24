@@ -45,18 +45,17 @@ contract Dispatcher is Ownable {
 
         (bool success, , Operation memory operation) = OperationCodec.decode(0, opBytes, uint64(opBytes.length));
         require(success, "Operation deserialization failed");
-
-        Aggregate aggregate = AggregateRepository(repository).get();
         
         for (uint i = 0; i < operation.commands.length; i++) {
             // todo: check cmd author signature
+            Aggregate aggregate = AggregateRepository(repository).get(string(operation.commands[i].aggregate_id));
             aggregate.handle(operation.commands[i]);
-        }
 
-        DomainEvent[] memory recentChanges = AggregateRepository(repository).save(aggregate);
-        for (uint i = 0; i < recentChanges.length; i++) {
-            DomainEvent memory recentChange = recentChanges[i];
-            emit OmnichainEvent(recentChange.evnt_idx, recentChange.evnt_type, DomainEventCodec.encode(recentChange));
+            DomainEvent[] memory recentChanges = AggregateRepository(repository).save(aggregate);
+            for (uint j = 0; j < recentChanges.length; j++) {
+                DomainEvent memory recentChange = recentChanges[j];
+                emit OmnichainEvent(recentChange.evnt_idx, recentChange.evnt_type, DomainEventCodec.encode(recentChange));
+            }
         }
     }
 

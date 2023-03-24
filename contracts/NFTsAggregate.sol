@@ -11,7 +11,8 @@ import "./proto/event.proto.sol";
 
 contract NFTsAggregate is Aggregate, Utils {
 
-    constructor() {
+    constructor(string memory id_) {
+        id = id_;
         state = new NFTsState();
     }
 
@@ -36,7 +37,7 @@ contract NFTsAggregate is Aggregate, Utils {
         NFTsState s = NFTsState(address(state));
 
         bytes32 hash = bytes32(payload.hash);
-        require(s.items(hash) == address(0), "NFT with such hash is already minted");
+        require(s.nfts(hash) == address(0), "NFT with such hash is already minted");
 
         NFTMintedPayload memory evnt_payload; 
         evnt_payload.hash = payload.hash;
@@ -55,11 +56,11 @@ contract NFTsAggregate is Aggregate, Utils {
         
         bytes32 hash = bytes32(payload.hash);
         address to = bytesToAddress(payload.to);
-        require(s.items(hash) != to, "NFT can not be transferred to its current owner");
+        require(s.nfts(hash) != to, "NFT can not be transferred to its current owner");
 
         NFTTransferedPayload memory evnt_payload;
         evnt_payload.hash = payload.hash;
-        evnt_payload.from = abi.encodePacked(s.items(hash));
+        evnt_payload.from = abi.encodePacked(s.nfts(hash));
         evnt_payload.to = payload.to;
         
         DomainEvent memory evnt;

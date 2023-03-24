@@ -13,14 +13,14 @@ import "./proto/command.proto.sol";
 contract AggregateRepository is Ownable {
 
     EventStore public eventstore;
-    Aggregate public aggregate;
     address public dispatcher;
+
+    mapping(string => address) public aggregates;
     
     uint constant BATCH_LIMIT = 1000; // for demo purposes only
 
     constructor(address eventstore_) {
         eventstore = EventStore(eventstore_);
-        aggregate = new NFTsAggregate(); // for demo purposes only
     }
 
     modifier onlyDispatcher {
@@ -32,25 +32,29 @@ contract AggregateRepository is Ownable {
         dispatcher = dispatcher_;
     }
 
-    function get(/* address aggregateId */) external onlyDispatcher returns (Aggregate) {
-
-        DomainEvent[] memory evnts = eventstore.pull(address(aggregate), 0, BATCH_LIMIT);
-        aggregate.setup(evnts);
-
-        return aggregate;
+    function addAggregate(string memory id) public onlyOwner { // for demo purposes only
+        aggregates[id] = address(new NFTsAggregate(id));
     }
 
-    function save(Aggregate ag) external onlyDispatcher returns (DomainEvent[] memory) {
+    function get(string memory aggregateId) external onlyDispatcher returns (Aggregate) {
+        require(aggregates[aggregateId] != address(0), "No aggregate found for provided id");
 
-        DomainEvent[] memory changes = new DomainEvent[](ag.getChangesLength());
+        DomainEvent[] memory evnts = eventstore.pull(aggregateId, 0, BATCH_LIMIT);
+        Aggregate(aggregates[aggregateId]).setup(evnts);
 
-        for (uint i = 0; i < ag.getChangesLength(); i++) {
-            DomainEvent memory evnt = ag.getChange(i);
-            eventstore.append(address(ag), evnt);
+        return Aggregate(aggregates[aggregateId]);
+    }
+
+    function save(Aggregate aggregate) external onlyDispatcher returns (DomainEvent[] memory) {
+        DomainEvent[] memory changes = new DomainEvent[](aggregate.getChangesLength());
+
+        for (uint i = 0; i < aggregate.getChangesLength(); i++) {
+            DomainEvent memory evnt = aggregate.getChange(i);
+            eventstore.append(aggregate.id(), evnt);
             changes[i] = evnt;
         }
 
-        ag.reset();
+        aggregate.reset();
 
         return changes;
     }

@@ -10,8 +10,8 @@ import "./proto/event.proto.sol";
 
 contract NFTsState is AggregateState, Utils {
 
-    mapping (bytes32 => address) public items;
-    bytes32[] public ids;
+    mapping (bytes32 => address) public nfts;
+    bytes32[] public nftsIds;
     
 
     function on(DomainEvent memory evnt) internal override { 
@@ -36,22 +36,22 @@ contract NFTsState is AggregateState, Utils {
         bytes32 hash = bytes32(payload.hash);
         address owner = bytesToAddress(payload.owner);
 
-        items[hash] = owner;
-        ids.push(hash);
+        nfts[hash] = owner;
+        nftsIds.push(hash);
     }
 
     function onTransfered(NFTTransferedPayload memory payload) private {
         bytes32 hash = bytes32(payload.hash);
         address to = bytesToAddress(payload.to);
 
-        items[hash] = to;
+        nfts[hash] = to;
     }
 
     function clear() internal override { 
-        for (uint i = 0; i < ids.length; i++) {
-            delete items[ids[i]];
+        for (uint i = 0; i < nftsIds.length; i++) {
+            delete nfts[nftsIds[i]];
         }
-        delete ids;
+        delete nftsIds;
     }
 
 }

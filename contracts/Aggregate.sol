@@ -10,6 +10,7 @@ import "./proto/command.proto.sol";
 
 abstract contract Aggregate is Ownable {
 
+    string public id;
     AggregateState public state;
     DomainEvent[] changes;
     bool isReady;
