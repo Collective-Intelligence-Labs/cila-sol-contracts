@@ -5,7 +5,6 @@ pragma solidity >=0.8.0 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./EventStore.sol";
 import "./Aggregate.sol";
-import "./NFTsAggregate.sol";
 import "./proto/event.proto.sol";
 import "./proto/command.proto.sol";
 
@@ -32,8 +31,8 @@ contract AggregateRepository is Ownable {
         dispatcher = dispatcher_;
     }
 
-    function addAggregate(string memory id) public onlyOwner { // for demo purposes only
-        aggregates[id] = address(new NFTsAggregate(id));
+    function addAggregate(string memory id, address aggregate) public onlyOwner { // for demo purposes only
+        aggregates[id] = aggregate;
     }
 
     function get(string memory aggregateId) external onlyDispatcher returns (Aggregate) {

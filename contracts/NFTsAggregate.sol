@@ -11,8 +11,7 @@ import "./proto/event.proto.sol";
 
 contract NFTsAggregate is Aggregate, Utils {
 
-    constructor(string memory id_) {
-        id = id_;
+    constructor() {
         state = new NFTsState();
     }
 

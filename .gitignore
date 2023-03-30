@@ -1,3 +1,24 @@
 .deps/
 contracts/artifacts
 contracts/proto/artifacts
+
+# Build artifacts
+build/
+bin/
+contracts/*
+
+# Test artifacts
+coverage/
+lib/__test__/
+test-report.xml
+test-*.js
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment files
+.env*
+
+.vscode/
