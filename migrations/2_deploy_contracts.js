@@ -26,7 +26,6 @@ module.exports = function(deployer) {
     deployer.deploy(CommandCodec);
     deployer.deploy(OperationCodec);
     deployer.deploy(DomainEventCodec);
-    deployer.deploy(Utils);
     
     deployer.link(CommandCodec, AggregateRepository);
     deployer.link(DomainEventCodec, AggregateRepository);
