@@ -13,16 +13,7 @@ abstract contract Aggregate is Ownable {
     string public id;
     AggregateState public state;
     DomainEvent[] changes;
-    bool isReady;
     uint64 eventsCount;
-
-
-    function handle(Command memory cmd) external {
-        require(isReady, "Aggregate is not set up");
-        handleCommand(cmd);
-    }
-
-    function handleCommand(Command memory cmd) internal virtual;
 
     function applyEvent(DomainEvent memory evnt) internal {
         state.spool(evnt);
@@ -43,14 +34,12 @@ abstract contract Aggregate is Ownable {
             state.spool(evnts[i]);
             eventsCount++;
         }
-        isReady = true;
     }
 
     function reset() external onlyOwner {
         state.reset();
         eventsCount = 0;
         delete changes;
-        isReady = false;
     }
 
 }
