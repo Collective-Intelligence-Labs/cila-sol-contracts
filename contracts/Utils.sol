@@ -22,8 +22,12 @@ library Utils {
     }
 
     function bytesToString(bytes memory data) internal pure returns (string memory) {
-    return abi.decode(data, (string));
-}
+        return abi.decode(data, (string));
+    }
+
+    function compareStrings(bytes memory s1, bytes memory s2) internal pure returns (bool) {
+        return (keccak256(abi.encodePacked((s1))) == keccak256(abi.encodePacked((s2))));
+    }
 
     
 }
