@@ -12,5 +12,18 @@ library Utils {
         }
         return addr;
     }
+
+    function bytesToBytes32(bytes memory data, uint256 offset) internal pure returns (bytes32 result) {
+        require(data.length >= offset + 32, "Invalid data length");
+
+        assembly {
+            result := mload(add(data, add(offset, 32)))
+        }
+    }
+
+    function bytesToString(bytes memory data) internal pure returns (string memory) {
+    return abi.decode(data, (string));
+}
+
     
 }

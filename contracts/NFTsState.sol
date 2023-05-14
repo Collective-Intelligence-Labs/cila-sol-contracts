@@ -12,7 +12,6 @@ contract NFTsState {
 
     mapping (bytes32 => address) public nfts;
     bytes32[] public nftsIds;
-    
 
     function on(NFTMintedPayload memory payload) public {
         bytes32 hash = bytes32(payload.hash);
@@ -22,7 +21,7 @@ contract NFTsState {
         nftsIds.push(hash);
     }
 
-    function on(NFTTransferedPayload memory payload) private {
+    function on(NFTTransferedPayload memory payload) public {
         bytes32 hash = bytes32(payload.hash);
         address to = Utils.bytesToAddress(payload.to);
 

@@ -34,7 +34,7 @@ contract Dispatcher is Ownable {
             uint256 commandType = uint256(cmd.cmd_type);
             address handlerAddress = registery.handlers(commandType);
             CommandHandlerInvoker invoker = new CommandHandlerInvoker();
-            invoker.Invoke(handlerAddress, cmd.cmd_payload, commandType, string(cmd.aggregate_id));
+            invoker.invoke(handlerAddress, cmd.cmd_payload, string(cmd.aggregate_id));
         }
     }
 }

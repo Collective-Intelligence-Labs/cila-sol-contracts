@@ -34,7 +34,6 @@ contract EventStore is Ownable {
         return ev;
     }
 
-
     function pull(string memory aggregateId, uint startIndex, uint limit) public view returns (DomainEvent[] memory) {
 
         uint length = streams[aggregateId].length;
@@ -126,7 +125,6 @@ contract EventStore is Ownable {
             streams[aggregateId].pop();
         }
     }
-
 
     function clean(string memory aggregateId) external onlyOwner { // for demo purposes only
         delete streams[aggregateId];

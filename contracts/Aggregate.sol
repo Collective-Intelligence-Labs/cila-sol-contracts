@@ -11,35 +11,14 @@ import "./proto/command.proto.sol";
 abstract contract Aggregate is Ownable {
 
     string public id;
-    AggregateState public state;
     DomainEvent[] changes;
-    uint64 eventsCount;
-
-    function applyEvent(DomainEvent memory evnt) internal {
-        state.spool(evnt);
-        eventsCount++;
-        changes.push(evnt);
-    }
+    uint256 version;
 
     function getChangesLength() external view returns (uint256)  {
-        return changes.length;
+        return version;
     }
 
     function getChange(uint i) external view returns (DomainEvent memory)  {
         return changes[i];
     }
-
-    function setup(DomainEvent[] memory evnts) external onlyOwner {
-        for (uint i = 0; i < evnts.length; i++) {
-            state.spool(evnts[i]);
-            eventsCount++;
-        }
-    }
-
-    function reset() external onlyOwner {
-        state.reset();
-        eventsCount = 0;
-        delete changes;
-    }
-
 }
