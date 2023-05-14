@@ -5,7 +5,6 @@ contracts/proto/artifacts
 # Build artifacts
 build/
 bin/
-contracts/*
 
 # Test artifacts
 coverage/

@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message MintNFTPayload {
+    bytes hash = 1;
+    bytes owner = 2;
+}
