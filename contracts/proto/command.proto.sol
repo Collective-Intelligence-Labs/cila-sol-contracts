@@ -5,7 +5,7 @@ pragma experimental ABIEncoderV2;
 
 import "@lazyledger/protobuf3-solidity-lib/contracts/ProtobufLib.sol";
 
-enum CommandType { UNSPECIFIED, MINT_NFT, TRANSFER_NFT }
+enum CommandType { UNSPECIFIED_COMMAND, MINT_NFT, TRANSFER_NFT }
 
 struct Command {
     bytes aggregate_id;

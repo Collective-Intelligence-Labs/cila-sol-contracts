@@ -5,7 +5,7 @@ pragma experimental ABIEncoderV2;
 
 import "@lazyledger/protobuf3-solidity-lib/contracts/ProtobufLib.sol";
 
-enum DomainEventType { UNSPECIFIED, NFT_MINTED, NFT_TRANSFERED }
+enum DomainEventType { UNSPECIFIED_EVENT, NFT_MINTED, NFT_TRANSFERED }
 
 struct DomainEvent {
     uint64 evnt_idx;
